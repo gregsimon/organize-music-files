@@ -15,10 +15,10 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the script by providing the path to the folder containing your audio files:
+Run the script by providing the path to the source folder and the destination folder:
 
 ```bash
-python organize-music-files.py <source_folder>
+python organize-music-files.py <source_folder> <destination_folder>
 ```
 
 ### Options
@@ -26,13 +26,13 @@ python organize-music-files.py <source_folder>
 - `--dry-run`: Prints the actions that would be taken (folder creation and file moving) without actually moving any files on the disk. This is useful for verifying the behavior before committing to the changes.
 
 ```bash
-python organize-music-files.py /path/to/my/music --dry-run
+python organize-music-files.py /path/to/my/music /path/to/destination --dry-run
 ```
 
 ## Details
 
 1. The script reads the `artist` and `album` tags from each FLAC and MP3 file.
 2. It sanitizes the tags for safe file paths, replacing characters like `&` with `and`.
-3. It moves the processed audio files to a new directory structure. **Note:** Currently, the destination directory is hardcoded to `/tmp/music-folders/<artist>/<album>/`.
+3. It moves the processed audio files to the specified destination folder in a new directory structure `[destination_folder]/<artist>/<album>/`.
 
 If a file is missing metadata, the script uses fallbacks like "Unknown Artist" or "Unknown Album".

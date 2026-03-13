@@ -7,7 +7,7 @@ from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 
-def organize_audio_files(source_folder, dry_run=False):
+def organize_audio_files(source_folder, destination_folder, dry_run=False):
     """
     Organizes FLAC and MP3 files from a source folder into a directory structure
     of <artist>/<album>/<song>.
@@ -43,10 +43,7 @@ def organize_audio_files(source_folder, dry_run=False):
 
 
                 # --- Create new directory structure and move the file ---
-                destination_dir = os.path.join(source_folder, safe_artist, safe_album)
-                
-                # Currently overriding to /tmp/music-folders
-                destination_dir = os.path.join("/tmp/music-folders/", safe_artist, safe_album)
+                destination_dir = os.path.join(destination_folder, safe_artist, safe_album)
 
                 destination_path = os.path.join(destination_dir, filename)
 
@@ -64,8 +61,9 @@ def organize_audio_files(source_folder, dry_run=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Organizes FLAC and MP3 files from a source folder into a directory structure of <artist>/<album>/<song>.")
     parser.add_argument('source_folder', help="The path to the folder containing the audio files.")
+    parser.add_argument('destination_folder', help="The path to the destination folder where organized files will be placed.")
     parser.add_argument('--dry-run', action='store_true', help="Print the actions that would be taken without actually organizing the files.")
     
     args = parser.parse_args()
     
-    organize_audio_files(args.source_folder, dry_run=args.dry_run)
+    organize_audio_files(args.source_folder, args.destination_folder, dry_run=args.dry_run)
