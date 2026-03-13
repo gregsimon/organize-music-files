@@ -4,26 +4,34 @@ import os
 import shutil
 import argparse
 from mutagen.flac import FLAC
+from mutagen.mp3 import MP3
+from mutagen.easyid3 import EasyID3
 
-def organize_flac_files(source_folder, dry_run=False):
+def organize_audio_files(source_folder, dry_run=False):
     """
-    Organizes FLAC files from a source folder into a directory structure
+    Organizes FLAC and MP3 files from a source folder into a directory structure
     of <artist>/<album>/<song>.
 
     Args:
-        source_folder (str): The path to the folder containing the FLAC files.
+        source_folder (str): The path to the folder containing the audio files.
         dry_run (bool): If True, only prints out the steps instead of acting.
     """
     for filename in os.listdir(source_folder):
-        if filename.lower().endswith('.flac'):
+        if filename.lower().endswith(('.flac', '.mp3')):
             source_path = os.path.join(source_folder, filename)
 
             try:
-                audio = FLAC(source_path)
+                if filename.lower().endswith('.flac'):
+                    audio = FLAC(source_path)
+                else:
+                    audio = MP3(source_path, ID3=EasyID3)
 
                 # --- Get metadata, with fallbacks for missing tags ---
-                artist = audio.get('artist', ['Unknown Artist'])[0]
-                album = audio.get('album', ['Unknown Album'])[0]
+                artist_tags = audio.get('artist', ['Unknown Artist'])
+                artist = artist_tags[0] if artist_tags else 'Unknown Artist'
+                
+                album_tags = audio.get('album', ['Unknown Album'])
+                album = album_tags[0] if album_tags else 'Unknown Album'
 
                 # replace ampersand with "and" in artist and album
                 artist = artist.replace('&', 'and')
@@ -54,10 +62,10 @@ def organize_flac_files(source_folder, dry_run=False):
                 print(f"Error processing {filename}: {e}")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Organizes FLAC files from a source folder into a directory structure of <artist>/<album>/<song>.")
-    parser.add_argument('source_folder', help="The path to the folder containing the FLAC files.")
+    parser = argparse.ArgumentParser(description="Organizes FLAC and MP3 files from a source folder into a directory structure of <artist>/<album>/<song>.")
+    parser.add_argument('source_folder', help="The path to the folder containing the audio files.")
     parser.add_argument('--dry-run', action='store_true', help="Print the actions that would be taken without actually organizing the files.")
     
     args = parser.parse_args()
     
-    organize_flac_files(args.source_folder, dry_run=args.dry_run)
+    organize_audio_files(args.source_folder, dry_run=args.dry_run)
